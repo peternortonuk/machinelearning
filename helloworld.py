@@ -1,2 +1,0 @@
-print 'cheese'
-print 'peas'
