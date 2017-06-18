@@ -72,13 +72,13 @@ y = df_all[train_mask][y_columns].values
 Z = df_all[test_mask][X_columns].values
 ZT = df_all[test_mask][y_columns].values
 
-h = 1  # step size in the mesh
+h = 1.0  # step size in the mesh
 
 # Create color maps
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-for weights in ['uniform', 'distance']:
+for weights in ['uniform']: #, 'distance']:
     # we create an instance of Neighbours Classifier and fit the data.
     clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
     clf.fit(X, y)
