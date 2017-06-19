@@ -30,8 +30,11 @@ test_row_count = total_row_count - train_row_count
 
 # add a column with the usage type and label as test versus train
 unique_species = df_all['Species'].unique()
-for species in unique_species:
+np.ndarray.sort(unique_species)
+for i, species in enumerate(unique_species):
     species_mask = df_all['Species'] == species
+    # add integer code for use in charting later
+    df_all.loc[species_mask,'Species_code'] = i
     # monumental faff due to assignment fail when using chained indexing
     # http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
     # train
@@ -41,9 +44,11 @@ for species in unique_species:
     ix = df_all.index[species_mask][train_row_count: train_row_count+test_row_count]
     df_all.loc[ix, 'Usage'] = 'test'
 
+
 # create train and test data for the model
 train_mask = df_all['Usage'] == 'train'
 test_mask = df_all['Usage'] == 'test'
+model_mask = df_all['Usage'].isin(['train', 'test'])
 X_columns = ['leaf length', 'leaf width', 'widest point', 'total veins']
 y_columns = ['Species']
 X = df_all[train_mask][X_columns].values
@@ -61,16 +66,13 @@ clf.fit(X, y.ravel())
 output = clf.predict(Z)
 result = output == ZT.ravel()
 print np.unique(result, return_counts=True)
-print('cheese')
 
-
-# create train and test data for the model
+# charting with 2D only; use all the model data
+# also requires numeric chart labels (instead of species name)
 X_columns = ['leaf length', 'leaf width']
-y_columns = ['Species']
-X = df_all[train_mask][X_columns].values
-y = df_all[train_mask][y_columns].values
-Z = df_all[test_mask][X_columns].values
-ZT = df_all[test_mask][y_columns].values
+y_columns = ['Species_code']
+X = df_all[model_mask][X_columns].values
+y = df_all[model_mask][y_columns].values
 
 h = 1.0  # step size in the mesh
 
@@ -78,7 +80,7 @@ h = 1.0  # step size in the mesh
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-for weights in ['uniform']: #, 'distance']:
+for weights in ['uniform', 'distance']:
     # we create an instance of Neighbours Classifier and fit the data.
     clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
     clf.fit(X, y)
@@ -104,3 +106,5 @@ for weights in ['uniform']: #, 'distance']:
               % (n_neighbors, weights))
 
 plt.show()
+
+print('cheese')
