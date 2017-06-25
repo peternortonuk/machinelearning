@@ -24,12 +24,11 @@ df_all = pd.concat(list_of_df, axis=0, join='inner', copy=True)
 df_all.reset_index(drop=True, inplace=True)
 
 # calculate the minimum row count to ensure equal group sizes
-df_count = df_all.groupby(by='Species').count().iloc[:,0]
+df_count = df_all.groupby(by='Species').count().iloc[:, 0]
 group_row_count = df_count.min()
 
 # create a new df with equal sized groups
 unique_species = df_all['Species'].unique()
-np.ndarray.sort(unique_species)
 df_equal = pd.DataFrame()
 for i, species in enumerate(unique_species):
     species_mask = df_all['Species'] == species
@@ -40,6 +39,7 @@ for i, species in enumerate(unique_species):
     ix = df_all.index[species_mask][:group_row_count]
     df_subset = df_all.loc[ix, :]
     df_equal = pd.concat([df_equal, df_subset], axis=0)
+species_key_df = df_all[['Species', 'Species_code']].drop_duplicates()
 
 # create arrays of required data
 X_columns = ['leaf length', 'leaf width', 'widest point', 'total veins']
@@ -54,7 +54,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor
 n_neighbors = 10
 weights = ['uniform', 'distance']
 clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[0])
-clf.fit(X_train, y_train)
+clf.fit(X_train, y_train.ravel())
 
 # predict the test data
 output = clf.predict(X_test)
@@ -69,6 +69,6 @@ y_columns = ['Species_code']
 X = df_equal[X_columns].values
 y = df_equal[y_columns].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
+print(species_key_df)
 plot_knn(X_test, y_test, n_neighbors)
 
-print('cheese')

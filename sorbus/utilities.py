@@ -16,7 +16,7 @@ def plot_knn(X, y, n_neighbors, h=1.0):
     for weights in ['uniform', 'distance']:
         # we create an instance of Neighbours Classifier and fit the data.
         clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
-        clf.fit(X, y)
+        clf.fit(X, y.ravel())
 
         # Plot the decision boundary. For that, we will assign a color to each
         # point in the mesh [x_min, x_max]x[y_min, y_max].
