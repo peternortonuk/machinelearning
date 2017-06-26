@@ -1,9 +1,9 @@
-
+from __future__ import division
 import pandas as pd
 import numpy as np
 import os
 from sklearn import neighbors
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, ShuffleSplit, cross_val_score
 from utilities import plot_knn
 
 pathname = r'C:\dev\code\machinelearning\data'
@@ -48,27 +48,37 @@ X = df_equal[X_columns].values
 y = df_equal[y_columns].values
 
 # use helper function to split into train and test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
 
-# fit the training data
-n_neighbors = 10
-weights = ['uniform', 'distance']
-clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[0])
-clf.fit(X_train, y_train.ravel())
+ss = ShuffleSplit(n_splits=10, test_size=0.1)
+for train_index, test_index in ss.split(X):
 
-# predict the test data
-output = clf.predict(X_test)
-result = output == y_test
-print np.unique(result, return_counts=True)
+    X_train, X_test, y_train, y_test = X[train_index], X[test_index], y[train_index], y[test_index]
 
-# charting with 2D only; use all the model data
-# also requires numeric chart labels (instead of species name)
-# create new arrays of required data
-X_columns = ['leaf length', 'leaf width']
-y_columns = ['Species_code']
-X = df_equal[X_columns].values
-y = df_equal[y_columns].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
-print(species_key_df)
-plot_knn(X_test, y_test, n_neighbors)
+    # fit the training data
+    n_neighbors = 10
+    weights = ['uniform', 'distance']
+    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[0])
+    clf.fit(X_train, y_train.ravel())
+
+    # predict the test data
+    output = clf.predict(X_test)
+
+    # report results
+    score = clf.score(X_test, y_test)
+    print("Score: {:.2%}".format(score))
+
+
+chart_it = None
+if chart_it:
+    # charting with 2D only; use all the model data
+    # also requires numeric chart labels (instead of species name)
+    # create new arrays of required data
+    X_columns = ['leaf length', 'leaf width']
+    y_columns = ['Species_code']
+    X = df_equal[X_columns].values
+    y = df_equal[y_columns].values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
+    print(species_key_df)
+    plot_knn(X_test, y_test, n_neighbors)
 
