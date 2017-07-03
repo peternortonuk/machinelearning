@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import os
 from sklearn import neighbors
-from sklearn.model_selection import train_test_split, ShuffleSplit, cross_val_score
+from sklearn.model_selection import train_test_split, ShuffleSplit, cross_val_score, GridSearchCV
 from utilities import plot_knn
+import matplotlib.pyplot as plt
 
 pathname = r'C:\dev\code\machinelearning\data'
 filename = r'Soraria measurements for Petra Guy - updated for knn.xlsx'
@@ -47,18 +48,19 @@ y_columns = ['Species']
 X = df_equal[X_columns].values
 y = df_equal[y_columns].values
 
-# use helper function to split into train and test
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
+
+# parameters of the model
+n_neighbors = 10
+weights = ['uniform', 'distance']
+weight = weights[0]
 
 ss = ShuffleSplit(n_splits=10, test_size=0.1)
 for train_index, test_index in ss.split(X):
-
+    # generate data from indices
     X_train, X_test, y_train, y_test = X[train_index], X[test_index], y[train_index], y[test_index]
 
     # fit the training data
-    n_neighbors = 10
-    weights = ['uniform', 'distance']
-    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[0])
+    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weight)
     clf.fit(X_train, y_train.ravel())
 
     # predict the test data
@@ -68,6 +70,31 @@ for train_index, test_index in ss.split(X):
     score = clf.score(X_test, y_test)
     print("Score: {:.2%}".format(score))
 
+
+cv = 10
+k_range = range(1, 20)
+k_scores = []
+k_vars = []
+for k in k_range:
+    knn = neighbors.KNeighborsClassifier(k, weights=weight)
+    scores = cross_val_score(knn, X, y.ravel(), cv=cv, scoring='accuracy')
+    k_scores.append(scores.mean())
+    k_vars.append(scores.var())
+plt.plot(k_range, k_scores)
+plt.show()
+
+plt.plot(k_range, k_vars)
+plt.show()
+
+# using GridSearch
+cv = 10
+parameters = {'weights': weights, 'n_neighbors': range(1, 10)}
+clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weight)
+clf = GridSearchCV(estimator=clf, cv=cv, param_grid=parameters)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_factor, random_state=0)
+clf.fit(X_train, y_train)
+
+print('cheese')
 
 chart_it = None
 if chart_it:
