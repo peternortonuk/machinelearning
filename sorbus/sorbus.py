@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split, ShuffleSplit, cross_val_sc
 from utilities import plot_knn
 import matplotlib.pyplot as plt
 
+
+
 pathname = r'C:\dev\code\machinelearning\data'
 filename = r'Soraria measurements for Petra Guy - updated for knn.xlsx'
 sheetnames = [r'intermedia - upload - leaf',
@@ -71,6 +73,18 @@ for train_index, test_index in ss.split(X):
     print("Score: {:.2%}".format(score))
 
 
+# The most common way to do cross-validation is k-fold cross-validation,
+# in which the data is first split into k (often 5 or 10) equal-sized folds, and then for each iteration,
+# one of the k folds is used as test data, and the rest as training data:
+
+# However if the data is sorted then the folds will be biased. So we need to shuffle
+# https://docs.scipy.org/doc/numpy/reference/generated/numpy.random.permutation.html
+rng = np.random.RandomState(0)
+permutation = rng.permutation(len(X))
+X, y = X[permutation], y[permutation]
+print(y)
+
+
 cv = 10
 k_range = range(1, 20)
 k_scores = []
@@ -80,11 +94,14 @@ for k in k_range:
     scores = cross_val_score(knn, X, y.ravel(), cv=cv, scoring='accuracy')
     k_scores.append(scores.mean())
     k_vars.append(scores.var())
-plt.plot(k_range, k_scores)
-plt.show()
 
+plt.figure(1)
+plt.plot(k_range, k_scores)
+plt.show(block=False)
+
+plt.figure(2)
 plt.plot(k_range, k_vars)
-plt.show()
+plt.show(block=False)
 
 # using GridSearch
 cv = 10
