@@ -29,9 +29,42 @@ def sigmoid_derivative(x):
     ds -- Your computed gradient.
     """
 
-    ### START CODE HERE ### (≈ 2 lines of code)
-    s = None
-    ds = None
-    ### END CODE HERE ###
+    s = sigmoid(x)
+    ds = s * (1 - s)
 
     return ds
+
+
+def image2vector(image):
+    """
+    Argument:
+    image -- a numpy array of shape (length, height, depth)
+
+    Returns:
+    v -- a vector of shape (length*height*depth, 1)
+    """
+
+    v = image.reshape((image.shape[0] * image.shape[1] * image.shape[2]), 1)
+
+    return v
+
+
+def normalizeRows(x):
+    """
+    Implement a function that normalizes each row of the matrix x (to have unit length).
+
+    Argument:
+    x -- A numpy matrix of shape (n, m)
+
+    Returns:
+    x -- The normalized (by row) numpy matrix. You are allowed to modify x.
+    """
+
+    # Compute x_norm as the norm 2 of x. Use np.linalg.norm(..., ord = 2, axis = ..., keepdims = True)
+    x_norm = np.linalg.norm(x, axis=1, keepdims=True)
+
+    # Divide x by its norm.
+    x = x / x_norm
+
+    return x
+
