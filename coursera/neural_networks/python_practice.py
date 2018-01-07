@@ -68,3 +68,53 @@ def normalizeRows(x):
 
     return x
 
+
+def softmax(x):
+    """Calculates the softmax by row of the input x.
+    softmax is a normalizing function that returns a matrix of the same shape
+
+    Argument:
+    x -- A numpy matrix of shape (n,m)
+
+    Returns:
+    s -- A numpy matrix equal to the softmax of x, of shape (n,m)
+    """
+
+    # Apply exp() element-wise to x. Use np.exp(...).
+    x_exp = np.exp(x)
+    x_sum = np.sum(x_exp, axis=1, keepdims=True)
+    s = x_exp / x_sum
+
+    return s
+
+
+def L1(yhat, y):
+    """
+    Arguments:
+    yhat -- vector of size m (predicted labels)
+    y -- vector of size m (true labels)
+
+    Returns:
+    loss -- the value of the L1 loss function
+    """
+
+    loss = np.sum(np.abs(y - yhat))
+
+    return loss
+
+
+def L2(yhat, y):
+    """
+    Arguments:
+    yhat -- vector of size m (predicted labels)
+    y -- vector of size m (true labels)
+
+    Returns:
+    loss -- the value of the L2 loss function 
+    np.dot(x,x) is the sum of the squares
+    """
+
+    loss = np.dot(y - yhat, y - yhat)
+
+    return loss
+
