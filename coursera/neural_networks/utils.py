@@ -48,6 +48,21 @@ def image2vector(image):
 
     return v
 
+def images2matrix(images):
+    """
+    Argument:
+    X -- a numpy array of shape (image_number, length, height, depth)
+        eg X.shape = (209, 64, 64, 3)
+        means there are 209 images of 64 x 64 pixels one for each of RGB
+
+    Returns:
+    X -- a numpy array with the same number of images
+        the -1 argument means flatten and infer the length
+        so returns a matrix of shape (image_number, length x height x depth)
+    """
+    X = images.reshape(images.shape[0], -1).T
+
+    return X
 
 def normalizeRows(x):
     """
@@ -118,3 +133,20 @@ def L2(yhat, y):
 
     return loss
 
+
+def initialize_with_zeros(dim):
+    """
+    This function creates a vector of zeros of shape (dim, 1) for w and initializes b to 0.
+
+    Argument:
+    dim -- size of the w vector we want (or number of parameters in this case)
+
+    Returns:
+    w -- initialized vector of shape (dim, 1)
+    b -- initialized scalar (corresponds to the bias)
+    """
+
+    w = np.zeros((dim, 1))
+    b = 0
+
+    return w, b
