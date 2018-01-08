@@ -2,6 +2,8 @@ import numpy as np
 from unittest import TestCase
 
 
+
+
 def sigmoid(x):
     """
     Compute sigmoid of x.
@@ -49,6 +51,7 @@ def image2vector(image):
 
     return v
 
+
 def images2matrix(images):
     """
     Argument:
@@ -64,6 +67,7 @@ def images2matrix(images):
     X = images.reshape(images.shape[0], -1).T
 
     return X
+
 
 def normalizeRows(x):
     """
@@ -170,6 +174,7 @@ def calc_activation(w, b, X):
 
     return A
 
+
 def calc_cost_function(X, A, Y):
     """
     Compute cost function
@@ -187,10 +192,12 @@ def calc_cost_function(X, A, Y):
 
     return J
 
+
 def calc_dJdw(X, A, Y):
     m = X.shape[1]
     dJdw = (1.0 / m) * np.dot(X, (A-Y).T)
     return dJdw
+
 
 def calc_dJdb(X, A, Y):
     m = X.shape[1]
@@ -209,24 +216,14 @@ def forward_propagate(w, b, X, Y):
     Y -- true "label" vector (containing 0 if non-cat, 1 if cat) of size (1, number of examples)
 
     Return:
-    cost -- negative log-likelihood cost for logistic regression
-    dw -- gradient of the loss with respect to w, thus same shape as w
-    db -- gradient of the loss with respect to b, thus same shape as b
-
-    Tips:
-    - Write your code step by step for the propagation. np.log(), np.dot()
+    A -- predicted output
+    J -- cost of prediction
     """
 
     A = calc_activation(w, b, X)
-
     J = calc_cost_function(X, A, Y)
 
     return A, J
-
-w, b, X, Y = np.array([[1.],[2.]]), 2., np.array([[1.,2.,-1.],[3.,4.,-3.2]]), np.array([[1,0,1]])
-A, cost = forward_propagate(w, b, X, Y)
-print ("cost = " + str(cost))
-#TestCase.assertAlmostEqual(cost, 5.80154531939, places=10, msg=None, delta=None)
 
 
 def backward_propagate(X, A, Y):
@@ -235,8 +232,134 @@ def backward_propagate(X, A, Y):
 
     return dJdw, dJdb
 
-dJdw, dJdb = backward_propagate(X, A, Y)
-print dJdw
-print dJdb
-import pdb; pdb.set_trace()
-pass
+
+def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
+    """
+    This function optimizes w and b by running a gradient descent algorithm
+
+    Arguments:
+    w -- weights, a numpy array of size (num_px * num_px * 3, 1)
+    b -- bias, a scalar
+    X -- data of shape (num_px * num_px * 3, number of examples)
+    Y -- true "label" vector (containing 0 if non-cat, 1 if cat), of shape (1, number of examples)
+    num_iterations -- number of iterations of the optimization loop
+    learning_rate -- learning rate of the gradient descent update rule
+    print_cost -- True to print the loss every 100 steps
+
+    Returns:
+    params -- dictionary containing the weights w and bias b
+    grads -- dictionary containing the gradients of the weights and bias with respect to the cost function
+    costs -- list of all the costs computed during the optimization, this will be used to plot the learning curve.
+    """
+
+    costs = []
+
+    for i in range(num_iterations):
+
+        A, cost = forward_propagate(w, b, X, Y)
+        dJdw, dJdb = backward_propagate(X, A, Y)
+
+        w = w - learning_rate * dJdw
+        b = b - learning_rate * dJdb
+
+        # Record the costs
+        if i % 100 == 0:
+            costs.append(cost)
+
+        # Print the cost every 100 training examples
+        if print_cost and i % 100 == 0:
+            print ("Cost after iteration %i: %f" % (i, cost))
+
+    params = {"w": w,
+              "b": b}
+
+    grads = {"dw": dJdw,
+             "db": dJdb}
+
+    return params, grads, costs
+
+
+def predict(w, b, X):
+    '''
+    Predict whether the label is 0 or 1 using learned logistic regression parameters (w, b)
+
+    Arguments:
+    w -- weights, a numpy array of size (num_px * num_px * 3, 1)
+    b -- bias, a scalar
+    X -- data of size (num_px * num_px * 3, number of examples)
+
+    Returns:
+    Y_prediction -- a numpy array (vector) containing all predictions (0/1) for the examples in X
+    '''
+
+    m = X.shape[1]
+    Y_prediction = np.zeros((1, m))
+    w = w.reshape(X.shape[0], 1)
+
+    A = calc_activation(w, b, X)
+
+    for i in range(A.shape[1]):
+        # if modelled probability is greater than 0.5 then it's a cat
+        idx = np.where(A >= 0.5)
+        Y_prediction[idx] = 1
+
+    assert (Y_prediction.shape == (1, m))
+
+    return Y_prediction
+
+
+def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
+          learning_rate=0.5, print_cost=False):
+    """
+    Builds the logistic regression model by calling the function you've implemented previously
+
+    Arguments:
+    X_train -- training set represented by a numpy array of shape (num_px * num_px * 3, m_train)
+    Y_train -- training labels represented by a numpy array (vector) of shape (1, m_train)
+    X_test -- test set represented by a numpy array of shape (num_px * num_px * 3, m_test)
+    Y_test -- test labels represented by a numpy array (vector) of shape (1, m_test)
+    num_iterations -- hyperparameter representing the number of iterations to optimize the parameters
+    learning_rate -- hyperparameter representing the learning rate used in the update rule of optimize()
+    print_cost -- Set to true to print the cost every 100 iterations
+
+    Returns:
+    d -- dictionary containing information about the model.
+    """
+
+    ### START CODE HERE ###
+
+    # initialize parameters with zeros (1 line of code)
+    dim = X_train.shape[0] + X_test.shape[0]
+    import pdb; pdb.set_trace()
+    w, b = initialize_with_zeros(dim)
+
+    # Gradient descent (1 line of code)
+    parameters, grads, costs = None
+
+    # Retrieve parameters w and b from dictionary "parameters"
+    w = parameters["w"]
+    b = parameters["b"]
+
+    # Predict test/train set examples (2 lines of code)
+    Y_prediction_test = None
+    Y_prediction_train = None
+
+    ### END CODE HERE ###
+
+    # Print train/test Errors
+    print("train accuracy: {} %".format(
+        100 - np.mean(np.abs(Y_prediction_train - Y_train)) * 100))
+    print("test accuracy: {} %".format(
+        100 - np.mean(np.abs(Y_prediction_test - Y_test)) * 100))
+
+    d = {"costs": costs,
+         "Y_prediction_test": Y_prediction_test,
+         "Y_prediction_train": Y_prediction_train,
+         "w": w,
+         "b": b,
+         "learning_rate": learning_rate,
+         "num_iterations": num_iterations}
+
+    return d
+
+d = model(train_set_x, train_set_y, test_set_x, test_set_y, num_iterations = 2000, learning_rate = 0.005, print_cost = True)
