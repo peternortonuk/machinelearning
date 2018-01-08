@@ -1,4 +1,5 @@
 import numpy as np
+from unittest import TestCase
 
 
 def sigmoid(x):
@@ -150,3 +151,92 @@ def initialize_with_zeros(dim):
     b = 0
 
     return w, b
+
+
+def calc_activation(w, b, X):
+    """
+    Compute activation layer
+
+    Arguments:
+    w -- A vector of weights
+    b -- A constant
+    X -- A matrix of features
+
+    Return:
+    A -- A vector of predictions
+    """
+
+    A = sigmoid(np.dot(w.T, X) + b)
+
+    return A
+
+def calc_cost_function(X, A, Y):
+    """
+    Compute cost function
+
+    Arguments:
+    X -- A matrix of features
+    A -- A vector of predictions
+    Y -- A vector of truth
+
+    Return:
+    J -- cost function
+    """
+    m = X.shape[1]
+    J = (-1.0 / m) * np.sum((Y * np.log(A)) + ((1 - Y) * np.log(1 - A)))
+
+    return J
+
+def calc_dJdw(X, A, Y):
+    m = X.shape[1]
+    dJdw = (1.0 / m) * np.dot(X, (A-Y).T)
+    return dJdw
+
+def calc_dJdb(X, A, Y):
+    m = X.shape[1]
+    dJdb = (1.0 / m) * np.sum(A - Y)
+    return dJdb
+
+
+def forward_propagate(w, b, X, Y):
+    """
+    Implement the cost function and its gradient for the propagation explained above
+
+    Arguments:
+    w -- weights, a numpy array of size (num_px * num_px * 3, 1)
+    b -- bias, a scalar
+    X -- data of size (num_px * num_px * 3, number of examples)
+    Y -- true "label" vector (containing 0 if non-cat, 1 if cat) of size (1, number of examples)
+
+    Return:
+    cost -- negative log-likelihood cost for logistic regression
+    dw -- gradient of the loss with respect to w, thus same shape as w
+    db -- gradient of the loss with respect to b, thus same shape as b
+
+    Tips:
+    - Write your code step by step for the propagation. np.log(), np.dot()
+    """
+
+    A = calc_activation(w, b, X)
+
+    J = calc_cost_function(X, A, Y)
+
+    return A, J
+
+w, b, X, Y = np.array([[1.],[2.]]), 2., np.array([[1.,2.,-1.],[3.,4.,-3.2]]), np.array([[1,0,1]])
+A, cost = forward_propagate(w, b, X, Y)
+print ("cost = " + str(cost))
+#TestCase.assertAlmostEqual(cost, 5.80154531939, places=10, msg=None, delta=None)
+
+
+def backward_propagate(X, A, Y):
+    dJdw = calc_dJdw(X, A, Y)
+    dJdb = calc_dJdb(X, A, Y)
+
+    return dJdw, dJdb
+
+dJdw, dJdb = backward_propagate(X, A, Y)
+print dJdw
+print dJdb
+import pdb; pdb.set_trace()
+pass
