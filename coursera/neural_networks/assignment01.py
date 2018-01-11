@@ -32,7 +32,6 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations = 2000, learning_rate
     w, b = utils.initialize_with_zeros(dim)
 
     # Gradient descent
-    A, J = utils.forward_propagate(w, b, X_train, Y_train)
     parameters, grads, costs = utils.optimize(w, b, X_train, Y_train, num_iterations,
                                         learning_rate, print_cost=False)
 
