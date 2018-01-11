@@ -323,8 +323,6 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
     d -- dictionary containing information about the model.
     """
 
-    ### START CODE HERE ###
-
     # initialize parameters with zeros (1 line of code)
     dim = X_train.shape[0] + X_test.shape[0]
     w, b = initialize_with_zeros(dim)
@@ -357,5 +355,3 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
          "num_iterations": num_iterations}
 
     return d
-
-d = model(train_set_x, train_set_y, test_set_x, test_set_y, num_iterations = 2000, learning_rate = 0.005, print_cost = True)
