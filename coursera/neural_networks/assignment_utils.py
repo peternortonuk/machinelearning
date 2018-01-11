@@ -1,6 +1,7 @@
 import numpy as np
 import h5py
 import os
+import utils
 
 def load_cat_dataset(path, file_train, file_test):
 
@@ -31,3 +32,22 @@ def build_cat_dataset(train_dataset, test_dataset):
     test_set_y_orig = test_set_y_orig.reshape((1, test_set_y_orig.shape[0]))
 
     return train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes
+
+
+def load_data(path, file_train, file_test):
+
+    train_dataset, test_dataset = load_cat_dataset(path, file_train, file_test)
+    train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes = build_cat_dataset(train_dataset, test_dataset)
+
+    return train_set_x_orig, train_set_y_orig, test_set_x_orig, test_set_y_orig, classes
+
+
+def prepare_data(train_set_x_orig, test_set_x_orig):
+
+    train_set_x_flatten = utils.images2matrix(train_set_x_orig)
+    test_set_x_flatten = utils.images2matrix(test_set_x_orig)
+
+    train_set_x = train_set_x_flatten / 255.
+    test_set_x = test_set_x_flatten / 255.
+
+    return train_set_x, test_set_x
