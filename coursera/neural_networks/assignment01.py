@@ -12,9 +12,11 @@ train_set_x_orig, train_set_y, test_set_x_orig, test_set_y, classes = assignment
 train_set_x, test_set_x = assignment_utils.prepare_data(train_set_x_orig, test_set_x_orig)
 d = utils.model(train_set_x, train_set_y, test_set_x, test_set_y, num_iterations = 2000, learning_rate = 0.005, print_cost = True)
 
-
+num_px = test_set_x_orig.shape[1]
 for index in range(test_set_x.shape[1]):
-    num_px = test_set_x_orig.shape[1]
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
     plt.imshow(test_set_x[:,index].reshape((num_px, num_px, 3)))
-    print (classes[d["Y_prediction_test"][0,index].astype(int)].decode("utf-8"))
+    text = classes[d["Y_prediction_test"][0,index].astype(int)].decode("utf-8")
+    ax.annotate(text, fontsize=20, xy=(2, 1), xytext=(3, -1.5))
     plt.show()
