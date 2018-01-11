@@ -323,22 +323,21 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
     d -- dictionary containing information about the model.
     """
 
-    # initialize parameters with zeros (1 line of code)
-    dim = X_train.shape[0] + X_test.shape[0]
+    # initialize parameters with zeros
+    dim = X_train.shape[0]
     w, b = initialize_with_zeros(dim)
 
-    # Gradient descent (1 line of code)
-    parameters, grads, costs = None
+    # Gradient descent
+    parameters, grads, costs = optimize(w, b, X_train, Y_train, num_iterations,
+                                        learning_rate, print_cost=False)
 
     # Retrieve parameters w and b from dictionary "parameters"
     w = parameters["w"]
     b = parameters["b"]
 
     # Predict test/train set examples (2 lines of code)
-    Y_prediction_test = None
-    Y_prediction_train = None
-
-    ### END CODE HERE ###
+    Y_prediction_test = predict(w, b, X_test)
+    Y_prediction_train = predict(w, b, X_train)
 
     # Print train/test Errors
     print("train accuracy: {} %".format(
