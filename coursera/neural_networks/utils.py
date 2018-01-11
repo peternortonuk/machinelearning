@@ -1,7 +1,4 @@
 import numpy as np
-from unittest import TestCase
-
-
 
 
 def sigmoid(x):
@@ -330,7 +327,6 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
 
     # initialize parameters with zeros (1 line of code)
     dim = X_train.shape[0] + X_test.shape[0]
-    import pdb; pdb.set_trace()
     w, b = initialize_with_zeros(dim)
 
     # Gradient descent (1 line of code)
