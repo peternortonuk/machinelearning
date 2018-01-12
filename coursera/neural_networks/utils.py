@@ -293,12 +293,12 @@ def predict(w, b, X):
     Y_prediction = np.zeros((1, m))
     w = w.reshape(X.shape[0], 1)
 
+    # calculate activation by passing linear model to sigmoid function
     A = calc_activation(w, b, X)
 
-    for i in range(A.shape[1]):
-        # if modelled probability is greater than 0.5 then it's a cat
-        idx = np.where(A >= 0.5)
-        Y_prediction[idx] = 1
+    # if modelled probability is greater than 0.5 then it's a cat
+    idx = np.where(A >= 0.5)
+    Y_prediction[idx] = 1
 
     assert (Y_prediction.shape == (1, m))
 
