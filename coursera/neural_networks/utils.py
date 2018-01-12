@@ -302,7 +302,7 @@ def predict(w, b, X):
 
     assert (Y_prediction.shape == (1, m))
 
-    return Y_prediction
+    return A, Y_prediction
 
 
 def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
@@ -336,8 +336,8 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
     b = parameters["b"]
 
     # Predict test/train set examples (2 lines of code)
-    Y_prediction_test = predict(w, b, X_test)
-    Y_prediction_train = predict(w, b, X_train)
+    A_test, Y_prediction_test = predict(w, b, X_test)
+    A_train, Y_prediction_train = predict(w, b, X_train)
 
     # Print train/test Errors
     print("train accuracy: {} %".format(
@@ -348,6 +348,8 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000,
     d = {"costs": costs,
          "Y_prediction_test": Y_prediction_test,
          "Y_prediction_train": Y_prediction_train,
+         "Activation_test": A_test,
+         "Activation_train": A_train,
          "w": w,
          "b": b,
          "learning_rate": learning_rate,

@@ -17,6 +17,8 @@ for index in range(test_set_x.shape[1]):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.imshow(test_set_x[:,index].reshape((num_px, num_px, 3)))
-    text = classes[d["Y_prediction_test"][0,index].astype(int)].decode("utf-8")
+    text_Y = classes[d["Y_prediction_test"][0,index].astype(int)].decode("utf-8")
+    text_A = str(d["Activation_test"][0,index]*100)
+    text = text_Y + " at " + text_A[:5] + " percent"
     ax.annotate(text, fontsize=20, xy=(2, 1), xytext=(3, -1.5))
     plt.show()
