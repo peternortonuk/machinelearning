@@ -1,5 +1,3 @@
-import numpy as np
-from assignment_utils import load_cat_dataset, build_cat_dataset
 import utils
 import assignment_utils
 import matplotlib.pyplot as plt
