@@ -36,35 +36,10 @@ from planar_utils import plot_decision_boundary, sigmoid, load_planar_dataset, l
 
 np.random.seed(1) # set a seed so that the results are consistent
 
-
-# ## 2 - Dataset ##
-# 
-# First, let's get the dataset you will work on. The following code will load a "flower" 2-class dataset into variables `X` and `Y`.
-
-# In[88]:
-
 X, Y = load_planar_dataset()
-
-
-# Visualize the dataset using matplotlib. The data looks like a "flower" with some red (label y=0) and some blue (y=1) points. Your goal is to build a model to fit this data. 
-
-# In[89]:
 
 # Visualize the data:
 plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);
-
-
-# You have:
-#     - a numpy-array (matrix) X that contains your features (x1, x2)
-#     - a numpy-array (vector) Y that contains your labels (red:0, blue:1).
-# 
-# Lets first get a better sense of what our data is like. 
-# 
-# **Exercise**: How many training examples do you have? In addition, what is the `shape` of the variables `X` and `Y`? 
-# 
-# **Hint**: How do you get the shape of a numpy array? [(help)](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.shape.html)
-
-# In[90]:
 
 ### START CODE HERE ### (≈ 3 lines of code)
 shape_X = X.shape
@@ -94,12 +69,6 @@ print ('Accuracy of logistic regression: %d ' % float((np.dot(Y,LR_predictions) 
        '% ' + "(percentage of correctly labelled datapoints)")
 
 
-# **Interpretation**: The dataset is not linearly separable, so logistic regression doesn't perform well. Hopefully a neural network will do better. Let's try this now! 
-
-# ## 4 - Neural Network model
-# Logistic regression did not work well on the "flower dataset". You are going to train a Neural Network with a single hidden layer.
-
-
 def layer_sizes(X, Y):
     """
     Arguments:
@@ -124,19 +93,6 @@ X_assess, Y_assess = layer_sizes_test_case()
 print("The size of the input layer is: n_x = " + str(n_x))
 print("The size of the hidden layer is: n_h = " + str(n_h))
 print("The size of the output layer is: n_y = " + str(n_y))
-
-
-
-# ### 4.2 - Initialize the model's parameters ####
-# 
-# **Exercise**: Implement the function `initialize_parameters()`.
-# 
-# **Instructions**:
-# - Make sure your parameters' sizes are right. Refer to the neural network figure above if needed.
-# - You will initialize the weights matrices with random values. 
-#     - Use: `np.random.randn(a,b) * 0.01` to randomly initialize a matrix of shape (a,b).
-# - You will initialize the bias vectors as zeros. 
-#     - Use: `np.zeros((a,b))` to initialize a matrix of shape (a,b) with zeros.
 
 
 def initialize_parameters(n_x, n_h, n_y):
@@ -184,20 +140,6 @@ print("W2 = " + str(parameters["W2"]))
 print("b2 = " + str(parameters["b2"]))
 
 
-# ### 4.3 - The Loop ####
-# 
-# **Question**: Implement `forward_propagation()`.
-# 
-# **Instructions**:
-# - Look above at the mathematical representation of your classifier.
-# - You can use the function `sigmoid()`. It is built-in (imported) in the notebook.
-# - You can use the function `np.tanh()`. It is part of the numpy library.
-# - The steps you have to implement are:
-#     1. Retrieve each parameter from the dictionary "parameters" (which is the output of `initialize_parameters()`) by using `parameters[".."]`.
-#     2. Implement Forward Propagation. Compute $Z^{[1]}, A^{[1]}, Z^{[2]}$ and $A^{[2]}$ (the vector of all your predictions on all the examples in the training set).
-# - Values needed in the backpropagation are stored in "`cache`". The `cache` will be given as an input to the backpropagation function.
-
-
 def forward_propagation(X, parameters):
     """
     Argument:
@@ -219,7 +161,7 @@ def forward_propagation(X, parameters):
     # Implement Forward Propagation to calculate A2 (probabilities)
     ### START CODE HERE ### (≈ 4 lines of code)
     Z1 = np.dot(W1, X) + b1
-    A1 = sigmoid(Z1)
+    A1 = np.tanh(Z1)
     Z2 = np.dot(W2, A1) + b2
     A2 = sigmoid(Z2)
     ### END CODE HERE ###
@@ -239,20 +181,6 @@ A2, cache = forward_propagation(X_assess, parameters)
 
 # Note: we use the mean here just to make sure that your output matches ours. 
 print(np.mean(cache['Z1']) ,np.mean(cache['A1']),np.mean(cache['Z2']),np.mean(cache['A2']))
-
-
-# **Exercise**: Implement `compute_cost()` to compute the value of the cost $J$.
-# 
-# **Instructions**:
-# - There are many ways to implement the cross-entropy loss. To help you, we give you how we would have implemented
-# $- \sum\limits_{i=0}^{m}  y^{(i)}\log(a^{[2](i)})$:
-# ```python
-# logprobs = np.multiply(np.log(A2),Y)
-# cost = - np.sum(logprobs)                # no need to use a for loop!
-# ```
-# 
-# (you can use either `np.multiply()` and then `np.sum()` or directly `np.dot()`).
-# 
 
 
 def compute_cost(A2, Y, parameters):
@@ -286,18 +214,6 @@ def compute_cost(A2, Y, parameters):
 A2, Y_assess, parameters = compute_cost_test_case()
 
 print("cost = " + str(compute_cost(A2, Y_assess, parameters)))
-
-
-# Using the cache computed during forward propagation, you can now implement backward propagation.
-# 
-# **Question**: Implement the function `backward_propagation()`.
-# 
-# **Instructions**:
-# Backpropagation is usually the hardest (most mathematical) part in deep learning. To help you, here again is the slide from the lecture on backpropagation. You'll want to use the six equations on the right of this slide, since you are building a vectorized implementation.
-
-# - Tips:
-#     - To compute dZ1 you'll need to compute $g^{[1]'}(Z^{[1]})$. Since $g^{[1]}(.)$ is the tanh activation function, if $a = g^{[1]}(z)$ then $g^{[1]'}(z) = 1-a^2$. So you can compute 
-#     $g^{[1]'}(Z^{[1]})$ using `(1 - np.power(A1, 2))`.
 
 
 def backward_propagation(parameters, cache, X, Y):
@@ -505,7 +421,7 @@ def predict(parameters, X):
     # Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.
     ### START CODE HERE ### (≈ 2 lines of code)
     A2, cache = forward_propagation(X, parameters)
-    predictions = np.zeros((1, 3))
+    predictions = np.zeros((1, X.shape[1]))
     idx = np.where(A2 >= 0.5)
     predictions[idx] = 1
     ### END CODE HERE ###
