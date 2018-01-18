@@ -450,7 +450,7 @@ plt.title("Decision Boundary for hidden layer size " + str(4))
 # Print accuracy
 predictions = predict(parameters, X)
 print ('Accuracy: %d' % float((np.dot(Y,predictions.T) + np.dot(1-Y,1-predictions.T))/float(Y.size)*100) + '%')
-
+plt.show()
 
 # Accuracy is really high compared to Logistic Regression. The model has learnt the leaf patterns of the flower! Neural networks are able to learn even highly non-linear decision boundaries, unlike logistic regression. 
 # 
@@ -474,7 +474,7 @@ for i, n_h in enumerate(hidden_layer_sizes):
     predictions = predict(parameters, X)
     accuracy = float((np.dot(Y,predictions.T) + np.dot(1-Y,1-predictions.T))/float(Y.size)*100)
     print ("Accuracy for {} hidden units: {} %".format(n_h, accuracy))
-
+plt.show()
 
 # **Interpretation**:
 # - The larger models (with more hidden units) are able to fit the training set better, until eventually the largest models overfit the data. 
