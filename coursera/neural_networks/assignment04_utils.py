@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from assignment03_utils import *
+from dnn_app_utils_v2 import *
 
 
 np.random.seed(1)
