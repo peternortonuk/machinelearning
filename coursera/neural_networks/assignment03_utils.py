@@ -1,19 +1,14 @@
-
 # coding: utf-8
 
-import numpy as np
-import h5py
 import matplotlib.pyplot as plt
 from testCases_v3 import *
 from dnn_utils_v2 import sigmoid, sigmoid_backward, relu, relu_backward
 
-#get_ipython().magic('matplotlib inline')
+
 plt.rcParams['figure.figsize'] = (5.0, 4.0) # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
-#get_ipython().magic('load_ext autoreload')
-#get_ipython().magic('autoreload 2')
 
 np.random.seed(1)
 
@@ -107,42 +102,6 @@ def linear_forward(A, W, b):
     return Z, cache
 
 
-
-
-
-# **Expected output**:
-# 
-# <table style="width:35%">
-#   
-#   <tr>
-#     <td> **Z** </td>
-#     <td> [[ 3.26295337 -1.23429987]] </td> 
-#   </tr>
-#   
-# </table>
-
-# ### 4.2 - Linear-Activation Forward
-# 
-# In this notebook, you will use two activation functions:
-# 
-# - **Sigmoid**: $\sigma(Z) = \sigma(W A + b) = \frac{1}{ 1 + e^{-(W A + b)}}$. We have provided you with the `sigmoid` function. This function returns **two** items: the activation value "`a`" and a "`cache`" that contains "`Z`" (it's what we will feed in to the corresponding backward function). To use it you could just call: 
-# ``` python
-# A, activation_cache = sigmoid(Z)
-# ```
-# 
-# - **ReLU**: The mathematical formula for ReLu is $A = RELU(Z) = max(0, Z)$. We have provided you with the `relu` function. This function returns **two** items: the activation value "`A`" and a "`cache`" that contains "`Z`" (it's what we will feed in to the corresponding backward function). To use it you could just call:
-# ``` python
-# A, activation_cache = relu(Z)
-# ```
-
-# For more convenience, you are going to group two functions (Linear and Activation) into one function (LINEAR->ACTIVATION). Hence, you will implement a function that does the LINEAR forward step followed by an ACTIVATION forward step.
-# 
-# **Exercise**: Implement the forward propagation of the *LINEAR->ACTIVATION* layer. Mathematical relation is: $A^{[l]} = g(Z^{[l]}) = g(W^{[l]}A^{[l-1]} +b^{[l]})$ where the activation "g" can be sigmoid() or relu(). Use linear_forward() and the correct activation function.
-
-# In[ ]:
-
-# GRADED FUNCTION: linear_activation_forward
-
 def linear_activation_forward(A_prev, W, b, activation):
     """
     Implement the forward propagation for the LINEAR->ACTIVATION layer
@@ -178,53 +137,6 @@ def linear_activation_forward(A_prev, W, b, activation):
 
     return A, cache
 
-
-# In[ ]:
-
-A_prev, W, b = linear_activation_forward_test_case()
-
-A, linear_activation_cache = linear_activation_forward(A_prev, W, b, activation = "sigmoid")
-print("With sigmoid: A = " + str(A))
-
-A, linear_activation_cache = linear_activation_forward(A_prev, W, b, activation = "relu")
-print("With ReLU: A = " + str(A))
-
-
-# **Expected output**:
-#        
-# <table style="width:35%">
-#   <tr>
-#     <td> **With sigmoid: A ** </td>
-#     <td > [[ 0.96890023  0.11013289]]</td> 
-#   </tr>
-#   <tr>
-#     <td> **With ReLU: A ** </td>
-#     <td > [[ 3.43896131  0.        ]]</td> 
-#   </tr>
-# </table>
-# 
-
-# **Note**: In deep learning, the "[LINEAR->ACTIVATION]" computation is counted as a single layer in the neural network, not two layers. 
-
-# ### d) L-Layer Model 
-# 
-# For even more convenience when implementing the $L$-layer Neural Net, you will need a function that replicates the previous one (`linear_activation_forward` with RELU) $L-1$ times, then follows that with one `linear_activation_forward` with SIGMOID.
-# 
-# <img src="images/model_architecture_kiank.png" style="width:600px;height:300px;">
-# <caption><center> **Figure 2** : *[LINEAR -> RELU] $\times$ (L-1) -> LINEAR -> SIGMOID* model</center></caption><br>
-# 
-# **Exercise**: Implement the forward propagation of the above model.
-# 
-# **Instruction**: In the code below, the variable `AL` will denote $A^{[L]} = \sigma(Z^{[L]}) = \sigma(W^{[L]} A^{[L-1]} + b^{[L]})$. (This is sometimes also called `Yhat`, i.e., this is $\hat{Y}$.) 
-# 
-# **Tips**:
-# - Use the functions you had previously written 
-# - Use a for loop to replicate [LINEAR->RELU] (L-1) times
-# - Don't forget to keep track of the caches in the "caches" list. To add a new value `c` to a `list`, you can use `list.append(c)`.
-
-# In[ ]:
-
-# GRADED FUNCTION: L_model_forward
 
 def L_model_forward(X, parameters):
     """
@@ -269,38 +181,6 @@ def L_model_forward(X, parameters):
     return AL, caches
 
 
-# In[ ]:
-
-X, parameters = L_model_forward_test_case_2hidden()
-AL, caches = L_model_forward(X, parameters)
-print("AL = " + str(AL))
-print("Length of caches list = " + str(len(caches)))
-
-
-# <table style="width:50%">
-#   <tr>
-#     <td> **AL** </td>
-#     <td > [[ 0.03921668  0.70498921  0.19734387  0.04728177]]</td> 
-#   </tr>
-#   <tr>
-#     <td> **Length of caches list ** </td>
-#     <td > 3 </td> 
-#   </tr>
-# </table>
-
-# Great! Now you have a full forward propagation that takes the input X and outputs a row vector $A^{[L]}$ containing your predictions. It also records all intermediate values in "caches". Using $A^{[L]}$, you can compute the cost of your predictions.
-
-# ## 5 - Cost function
-# 
-# Now you will implement forward and backward propagation. You need to compute the cost, because you want to check if your model is actually learning.
-# 
-# **Exercise**: Compute the cross-entropy cost $J$, using the following formula: $$-\frac{1}{m} \sum\limits_{i = 1}^{m} (y^{(i)}\log\left(a^{[L] (i)}\right) + (1-y^{(i)})\log\left(1- a^{[L](i)}\right)) \tag{7}$$
-# 
-
-# In[ ]:
-
-# GRADED FUNCTION: compute_cost
-
 def compute_cost(AL, Y):
     """
     Implement the cost function defined by equation (7).
@@ -326,69 +206,6 @@ def compute_cost(AL, Y):
     
     return cost
 
-
-# In[ ]:
-
-Y, AL = compute_cost_test_case()
-
-print("cost = " + str(compute_cost(AL, Y)))
-
-
-# **Expected Output**:
-# 
-# <table>
-# 
-#     <tr>
-#     <td>**cost** </td>
-#     <td> 0.41493159961539694</td> 
-#     </tr>
-# </table>
-
-# ## 6 - Backward propagation module
-# 
-# Just like with forward propagation, you will implement helper functions for backpropagation. Remember that back propagation is used to calculate the gradient of the loss function with respect to the parameters. 
-# 
-# **Reminder**: 
-# <img src="images/backprop_kiank.png" style="width:650px;height:250px;">
-# <caption><center> **Figure 3** : Forward and Backward propagation for *LINEAR->RELU->LINEAR->SIGMOID* <br> *The purple blocks represent the forward propagation, and the red blocks represent the backward propagation.*  </center></caption>
-# 
-# <!-- 
-# For those of you who are expert in calculus (you don't need to be to do this assignment), the chain rule of calculus can be used to derive the derivative of the loss $\mathcal{L}$ with respect to $z^{[1]}$ in a 2-layer network as follows:
-# 
-# $$\frac{d \mathcal{L}(a^{[2]},y)}{{dz^{[1]}}} = \frac{d\mathcal{L}(a^{[2]},y)}{{da^{[2]}}}\frac{{da^{[2]}}}{{dz^{[2]}}}\frac{{dz^{[2]}}}{{da^{[1]}}}\frac{{da^{[1]}}}{{dz^{[1]}}} \tag{8} $$
-# 
-# In order to calculate the gradient $dW^{[1]} = \frac{\partial L}{\partial W^{[1]}}$, you use the previous chain rule and you do $dW^{[1]} = dz^{[1]} \times \frac{\partial z^{[1]} }{\partial W^{[1]}}$. During the backpropagation, at each step you multiply your current gradient by the gradient corresponding to the specific layer to get the gradient you wanted.
-# 
-# Equivalently, in order to calculate the gradient $db^{[1]} = \frac{\partial L}{\partial b^{[1]}}$, you use the previous chain rule and you do $db^{[1]} = dz^{[1]} \times \frac{\partial z^{[1]} }{\partial b^{[1]}}$.
-# 
-# This is why we talk about **backpropagation**.
-# !-->
-# 
-# Now, similar to forward propagation, you are going to build the backward propagation in three steps:
-# - LINEAR backward
-# - LINEAR -> ACTIVATION backward where ACTIVATION computes the derivative of either the ReLU or sigmoid activation
-# - [LINEAR -> RELU] $\times$ (L-1) -> LINEAR -> SIGMOID backward (whole model)
-
-# ### 6.1 - Linear backward
-# 
-# For layer $l$, the linear part is: $Z^{[l]} = W^{[l]} A^{[l-1]} + b^{[l]}$ (followed by an activation).
-# 
-# Suppose you have already calculated the derivative $dZ^{[l]} = \frac{\partial \mathcal{L} }{\partial Z^{[l]}}$. You want to get $(dW^{[l]}, db^{[l]} dA^{[l-1]})$.
-# 
-# <img src="images/linearback_kiank.png" style="width:250px;height:300px;">
-# <caption><center> **Figure 4** </center></caption>
-# 
-# The three outputs $(dW^{[l]}, db^{[l]}, dA^{[l]})$ are computed using the input $dZ^{[l]}$.Here are the formulas you need:
-# $$ dW^{[l]} = \frac{\partial \mathcal{L} }{\partial W^{[l]}} = \frac{1}{m} dZ^{[l]} A^{[l-1] T} \tag{8}$$
-# $$ db^{[l]} = \frac{\partial \mathcal{L} }{\partial b^{[l]}} = \frac{1}{m} \sum_{i = 1}^{m} dZ^{[l](i)}\tag{9}$$
-# $$ dA^{[l-1]} = \frac{\partial \mathcal{L} }{\partial A^{[l-1]}} = W^{[l] T} dZ^{[l]} \tag{10}$$
-# 
-
-# **Exercise**: Use the 3 formulas above to implement linear_backward().
-
-# In[ ]:
-
-# GRADED FUNCTION: linear_backward
 
 def linear_backward(dZ, cache):
     """
@@ -418,67 +235,6 @@ def linear_backward(dZ, cache):
     
     return dA_prev, dW, db
 
-
-# In[ ]:
-
-# Set up some test inputs
-dZ, linear_cache = linear_backward_test_case()
-
-dA_prev, dW, db = linear_backward(dZ, linear_cache)
-print ("dA_prev = "+ str(dA_prev))
-print ("dW = " + str(dW))
-print ("db = " + str(db))
-
-
-# **Expected Output**: 
-# 
-# <table style="width:90%">
-#   <tr>
-#     <td> **dA_prev** </td>
-#     <td > [[ 0.51822968 -0.19517421]
-#  [-0.40506361  0.15255393]
-#  [ 2.37496825 -0.89445391]] </td> 
-#   </tr> 
-#   
-#     <tr>
-#         <td> **dW** </td>
-#         <td > [[-0.10076895  1.40685096  1.64992505]] </td> 
-#     </tr> 
-#   
-#     <tr>
-#         <td> **db** </td>
-#         <td> [[ 0.50629448]] </td> 
-#     </tr> 
-#     
-# </table>
-# 
-# 
-
-# ### 6.2 - Linear-Activation backward
-# 
-# Next, you will create a function that merges the two helper functions: **`linear_backward`** and the backward step for the activation **`linear_activation_backward`**. 
-# 
-# To help you implement `linear_activation_backward`, we provided two backward functions:
-# - **`sigmoid_backward`**: Implements the backward propagation for SIGMOID unit. You can call it as follows:
-# 
-# ```python
-# dZ = sigmoid_backward(dA, activation_cache)
-# ```
-# 
-# - **`relu_backward`**: Implements the backward propagation for RELU unit. You can call it as follows:
-# 
-# ```python
-# dZ = relu_backward(dA, activation_cache)
-# ```
-# 
-# If $g(.)$ is the activation function, 
-# `sigmoid_backward` and `relu_backward` compute $$dZ^{[l]} = dA^{[l]} * g'(Z^{[l]}) \tag{11}$$.  
-# 
-# **Exercise**: Implement the backpropagation for the *LINEAR->ACTIVATION* layer.
-
-# In[ ]:
-
-# GRADED FUNCTION: linear_activation_backward
 
 def linear_activation_backward(dA, cache, activation):
     """
@@ -510,99 +266,6 @@ def linear_activation_backward(dA, cache, activation):
     
     return dA_prev, dW, db
 
-
-# In[ ]:
-
-AL, linear_activation_cache = linear_activation_backward_test_case()
-
-dA_prev, dW, db = linear_activation_backward(AL, linear_activation_cache, activation = "sigmoid")
-print ("sigmoid:")
-print ("dA_prev = "+ str(dA_prev))
-print ("dW = " + str(dW))
-print ("db = " + str(db) + "\n")
-
-dA_prev, dW, db = linear_activation_backward(AL, linear_activation_cache, activation = "relu")
-print ("relu:")
-print ("dA_prev = "+ str(dA_prev))
-print ("dW = " + str(dW))
-print ("db = " + str(db))
-
-
-# **Expected output with sigmoid:**
-# 
-# <table style="width:100%">
-#   <tr>
-#     <td > dA_prev </td> 
-#            <td >[[ 0.11017994  0.01105339]
-#  [ 0.09466817  0.00949723]
-#  [-0.05743092 -0.00576154]] </td> 
-# 
-#   </tr> 
-#   
-#     <tr>
-#     <td > dW </td> 
-#            <td > [[ 0.10266786  0.09778551 -0.01968084]] </td> 
-#   </tr> 
-#   
-#     <tr>
-#     <td > db </td> 
-#            <td > [[-0.05729622]] </td> 
-#   </tr> 
-# </table>
-# 
-# 
-
-# **Expected output with relu:**
-# 
-# <table style="width:100%">
-#   <tr>
-#     <td > dA_prev </td> 
-#            <td > [[ 0.44090989  0.        ]
-#  [ 0.37883606  0.        ]
-#  [-0.2298228   0.        ]] </td> 
-# 
-#   </tr> 
-#   
-#     <tr>
-#     <td > dW </td> 
-#            <td > [[ 0.44513824  0.37371418 -0.10478989]] </td> 
-#   </tr> 
-#   
-#     <tr>
-#     <td > db </td> 
-#            <td > [[-0.20837892]] </td> 
-#   </tr> 
-# </table>
-# 
-# 
-
-# ### 6.3 - L-Model Backward 
-# 
-# Now you will implement the backward function for the whole network. Recall that when you implemented the `L_model_forward` function, at each iteration, you stored a cache which contains (X,W,b, and z). In the back propagation module, you will use those variables to compute the gradients. Therefore, in the `L_model_backward` function, you will iterate through all the hidden layers backward, starting from layer $L$. On each step, you will use the cached values for layer $l$ to backpropagate through layer $l$. Figure 5 below shows the backward pass. 
-# 
-# 
-# <img src="images/mn_backward.png" style="width:450px;height:300px;">
-# <caption><center>  **Figure 5** : Backward pass  </center></caption>
-# 
-# ** Initializing backpropagation**:
-# To backpropagate through this network, we know that the output is, 
-# $A^{[L]} = \sigma(Z^{[L]})$. Your code thus needs to compute `dAL` $= \frac{\partial \mathcal{L}}{\partial A^{[L]}}$.
-# To do so, use this formula (derived using calculus which you don't need in-depth knowledge of):
-# ```python
-# dAL = - (np.divide(Y, AL) - np.divide(1 - Y, 1 - AL)) # derivative of cost with respect to AL
-# ```
-# 
-# You can then use this post-activation gradient `dAL` to keep going backward. As seen in Figure 5, you can now feed in `dAL` into the LINEAR->SIGMOID backward function you implemented (which will use the cached values stored by the L_model_forward function). After that, you will have to use a `for` loop to iterate through all the other layers using the LINEAR->RELU backward function. You should store each dA, dW, and db in the grads dictionary. To do so, use this formula : 
-# 
-# $$grads["dW" + str(l)] = dW^{[l]}\tag{15} $$
-# 
-# For example, for $l=3$ this would store $dW^{[l]}$ in `grads["dW3"]`.
-# 
-# **Exercise**: Implement backpropagation for the *[LINEAR->RELU] $\times$ (L-1) -> LINEAR -> SIGMOID* model.
-
-# In[28]:
-
-# GRADED FUNCTION: L_model_backward
 
 def L_model_backward(AL, Y, caches):
     """
@@ -651,60 +314,6 @@ def L_model_backward(AL, Y, caches):
     return grads
 
 
-# In[29]:
-
-AL, Y_assess, caches = L_model_backward_test_case()
-grads = L_model_backward(AL, Y_assess, caches)
-print_grads(grads)
-
-
-# **Expected Output**
-# 
-# <table style="width:60%">
-#   
-#   <tr>
-#     <td > dW1 </td> 
-#            <td > [[ 0.41010002  0.07807203  0.13798444  0.10502167]
-#  [ 0.          0.          0.          0.        ]
-#  [ 0.05283652  0.01005865  0.01777766  0.0135308 ]] </td> 
-#   </tr> 
-#   
-#     <tr>
-#     <td > db1 </td> 
-#            <td > [[-0.22007063]
-#  [ 0.        ]
-#  [-0.02835349]] </td> 
-#   </tr> 
-#   
-#   <tr>
-#   <td > dA1 </td> 
-#            <td > [[ 0.12913162 -0.44014127]
-#  [-0.14175655  0.48317296]
-#  [ 0.01663708 -0.05670698]] </td> 
-# 
-#   </tr> 
-# </table>
-# 
-# 
-
-# ### 6.4 - Update Parameters
-# 
-# In this section you will update the parameters of the model, using gradient descent: 
-# 
-# $$ W^{[l]} = W^{[l]} - \alpha \text{ } dW^{[l]} \tag{16}$$
-# $$ b^{[l]} = b^{[l]} - \alpha \text{ } db^{[l]} \tag{17}$$
-# 
-# where $\alpha$ is the learning rate. After computing the updated parameters, store them in the parameters dictionary. 
-
-# **Exercise**: Implement `update_parameters()` to update your parameters using gradient descent.
-# 
-# **Instructions**:
-# Update parameters using gradient descent on every $W^{[l]}$ and $b^{[l]}$ for $l = 1, 2, ..., L$. 
-# 
-
-# In[38]:
-
-# GRADED FUNCTION: update_parameters
 
 def update_parameters(parameters, grads, learning_rate):
     """
@@ -729,61 +338,4 @@ def update_parameters(parameters, grads, learning_rate):
         parameters["b" + str(l)] = parameters["b" + str(l)] - learning_rate * grads["db" + str(l)]        
     ### END CODE HERE ###
     return parameters
-
-
-# In[39]:
-
-parameters, grads = update_parameters_test_case()
-parameters = update_parameters(parameters, grads, 0.1)
-
-print ("W1 = "+ str(parameters["W1"]))
-print ("b1 = "+ str(parameters["b1"]))
-print ("W2 = "+ str(parameters["W2"]))
-print ("b2 = "+ str(parameters["b2"]))
-
-
-# **Expected Output**:
-# 
-# <table style="width:100%"> 
-#     <tr>
-#     <td > W1 </td> 
-#            <td > [[-0.59562069 -0.09991781 -2.14584584  1.82662008]
-#  [-1.76569676 -0.80627147  0.51115557 -1.18258802]
-#  [-1.0535704  -0.86128581  0.68284052  2.20374577]] </td> 
-#   </tr> 
-#   
-#     <tr>
-#     <td > b1 </td> 
-#            <td > [[-0.04659241]
-#  [-1.28888275]
-#  [ 0.53405496]] </td> 
-#   </tr> 
-#   <tr>
-#     <td > W2 </td> 
-#            <td > [[-0.55569196  0.0354055   1.32964895]]</td> 
-#   </tr> 
-#   
-#     <tr>
-#     <td > b2 </td> 
-#            <td > [[-0.84610769]] </td> 
-#   </tr> 
-# </table>
-# 
-
-# 
-# ## 7 - Conclusion
-# 
-# Congrats on implementing all the functions required for building a deep neural network! 
-# 
-# We know it was a long assignment but going forward it will only get better. The next part of the assignment is easier. 
-# 
-# In the next assignment you will put all these together to build two models:
-# - A two-layer neural network
-# - An L-layer neural network
-# 
-# You will in fact use these models to classify cat vs non-cat images!
-
-# In[ ]:
-
-
 

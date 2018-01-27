@@ -4,10 +4,9 @@ import scipy
 from scipy import ndimage
 import os
 
+from dnn_app_utils_v2 import predict, print_mislabeled_images
 from assignment01_utils import load_data
-from assignment02_utils import predict
 from assignment04_utils import two_layer_model, L_layer_model
-from dnn_app_utils_v2 import print_mislabeled_images
 
 # ==========================================
 # run which model?
@@ -19,6 +18,9 @@ L_LAYER_MODEL = 'L_layer_model'
 # choose here
 model_selection = L_LAYER_MODEL
 
+# set number of iterations (original was 2500)
+num_iterations = 2500
+
 # ==========================================
 # configure images
 
@@ -26,8 +28,10 @@ plt.rcParams['figure.figsize'] = (5.0, 4.0) # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
+
 # ==========================================
 # image file definitions
+
 path = r'C:\dev\code\machinelearning\coursera\neural_networks\datasets'
 file_train = r'train_catvnoncat.h5'
 file_test = r'test_catvnoncat.h5'
@@ -41,7 +45,7 @@ train_x_orig, train_y, test_x_orig, test_y, classes = load_data(path, file_train
 index = 10
 plt.imshow(train_x_orig[index])
 print ("y = " + str(train_y[0,index]) + ". It's a " + classes[train_y[0,index]].decode("utf-8") +  " picture.")
-
+plt.show()
 
 # shape of the data
 m_train = train_x_orig.shape[0]
@@ -83,13 +87,11 @@ if model_selection == TWO_LAYER_MODEL:
     layers_dims = (n_x, n_h, n_y)
 
     # train the model
-    parameters = two_layer_model(train_x, train_y, layers_dims = (n_x, n_h, n_y), num_iterations = 2500, print_cost=True)
+    parameters = two_layer_model(train_x, train_y, layers_dims = (n_x, n_h, n_y), num_iterations = num_iterations, print_cost=True)
 
     # predict based on parameters
     predictions_train = predict(train_x, train_y, parameters)
     predictions_test = predict(test_x, test_y, parameters)
-
-print_mislabeled_images(classes, test_x, test_y, predictions_test)
 
 
 # ==========================================
@@ -100,11 +102,15 @@ if model_selection == L_LAYER_MODEL:
     layers_dims = [12288, 20, 7, 5, 1]
 
     # train the model
-    parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
+    parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = num_iterations, print_cost = True)
 
     # predict based on parameters
     predictions_train = predict(train_x, train_y, parameters)
     predictions_test = predict(test_x, test_y, parameters)
+
+
+# ==========================================
+# print from whichever model ran
 
 print_mislabeled_images(classes, test_x, test_y, predictions_test)
 
@@ -122,7 +128,10 @@ my_image = scipy.misc.imresize(image, size=(num_px,num_px)).reshape((num_px*num_
 my_predicted_image = predict(my_image, my_label_y, parameters)
 
 plt.imshow(image)
-print ("y = " + str(np.squeeze(my_predicted_image)) + ", your L-layer model predicts a \"" + classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
+print ("y = " + str(np.squeeze(my_predicted_image)) + \
+      ", your " + model_selection + \
+       " model predicts a \"" + \
+       classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
 
 
 
