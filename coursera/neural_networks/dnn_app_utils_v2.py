@@ -231,7 +231,7 @@ def L_model_forward(X, parameters):
     caches = []
     A = X
     L = len(parameters) // 2                  # number of layers in the neural network
-    
+
     # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
     for l in range(1, L):
         A_prev = A 
@@ -401,18 +401,21 @@ def predict(X, y, parameters):
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)
 
-    
     # convert probas to 0/1 predictions
     for i in range(0, probas.shape[1]):
         if probas[0,i] > 0.5:
             p[0,i] = 1
         else:
             p[0,i] = 0
-    
+
+    # ensure same types ie no floats allowed
+    p = p.astype(int)
+    y = y.astype(int)
+
     #print results
-    #print ("predictions: " + str(p))
-    #print ("true labels: " + str(y))
-    print("Accuracy: "  + str(np.sum((p == y)/m)))
+    print ("predictions: " + str(p))
+    print ("true labels: " + str(y))
+    print("Accuracy: " + str((np.sum((p == y))/float(m))))
         
     return p
 
