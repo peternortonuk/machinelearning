@@ -119,19 +119,19 @@ print_mislabeled_images(classes, test_x, test_y, predictions_test)
 # my own images
 
 
-# my_image = "cat_picture.jpg" # change this to the name of your image file
-# my_label_y = [1] # the true class of your image (1 -> cat, 0 -> non-cat)
-#
-# myfilepath = os.path.join(path, my_image)
-# image = np.array(ndimage.imread(myfilepath, flatten=False))
-# my_image = scipy.misc.imresize(image, size=(num_px,num_px)).reshape((num_px*num_px*3,1))
-# my_predicted_image = predict(my_image, my_label_y, parameters)
-#
-# plt.imshow(image)
-# print ("y = " + str(np.squeeze(my_predicted_image)) + \
-#       ", your " + model_selection + \
-#        " model predicts a \"" + \
-#        classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
+my_image = "cat_picture.jpg" # change this to the name of your image file
+my_label_y = [1] # the true class of your image (1 -> cat, 0 -> non-cat)
+
+myfilepath = os.path.join(path, my_image)
+image = np.array(ndimage.imread(myfilepath, flatten=False))
+my_image = scipy.misc.imresize(image, size=(num_px,num_px)).reshape((num_px*num_px*3,1))
+my_predicted_image = predict(my_image, my_label_y, parameters)
+
+plt.imshow(image)
+print ("y = " + str(np.squeeze(my_predicted_image)) + \
+      ", your " + model_selection + \
+       " model predicts a \"" + \
+       classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
 
 
 
