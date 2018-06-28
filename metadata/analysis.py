@@ -23,10 +23,12 @@ for groupby_column in groupby_columns:
     # count distinct
     df_counts = df_select.groupby(groupby_column).nunique()
 
-    # include the combo definition as a new column
-    # won't generate a groupby where one element is NaN; so count again
-    df_counts['groupby_column'] = [groupby_column] * len(df_counts.index)
+    # include the combo definition as a new column; populate with a list of tuples
+    # note that we wont get a groupby where one element is NaN; so count again
+    count_of_groups = len(df_counts.index)
+    df_counts['groupby_column'] = [groupby_column] * count_of_groups
 
+    # build up the list of results
     df_analysis = pd.concat([df_analysis, df_counts], axis=0)
 
 import pdb; pdb.set_trace()
