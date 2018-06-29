@@ -14,9 +14,9 @@ df_select = df[mask_data_source]
 
 rowcount = len(df_select.index)
 column_count = len(df_select.columns)
-combo_select = 2
+combo_count = 2
 
-columns_select = [#'DataSource',
+select_columns = [#'DataSource',
                   'Commodity',
                   'ProductOrMarket',
                   'Location',
@@ -35,17 +35,17 @@ columns_select = [#'DataSource',
                   'TimeOfDay',
                   'Timezone',
                   ]
-columns_select = columns_select[:5]
+report_columns = select_columns
+select_columns = select_columns[1:5]
 
 # a list of all combinations
-groupby_columns = list(combinations(columns_select, combo_select))
-# groupby_columns = [('ContractType', 'TimeOfDay')] + groupby_columns[:2]
+groupby_columns = list(combinations(select_columns, combo_count))
 
 # every combination
 dict_of_df = {}
 for groupby_column in groupby_columns:
     # count distinct
-    df_counts = df_select.groupby(groupby_column).nunique()
+    df_counts = df_select[report_columns].groupby(groupby_column).nunique()
 
     # count includes the groupby as an index; we want to combine to a single index
     a0 = df_counts.index.get_level_values(0).values.tolist()
