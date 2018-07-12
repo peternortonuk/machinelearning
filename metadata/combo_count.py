@@ -1,14 +1,11 @@
 import pandas as pd
-import os
 from itertools import combinations
 import matplotlib.pyplot as plt
+from load_data import get_df, select_columns
 #import mplcursors
 
-file = r'arc_metadata.csv'
-path = r'C:\dev\code\machinelearning\data'
-filepath = os.path.join(path, file)
-df = pd.read_csv(filepath)
 
+df = get_df()
 mask_data_source = df['DataSource'] == 'APX'
 df_select = df[mask_data_source]
 
@@ -16,25 +13,6 @@ rowcount = len(df_select.index)
 column_count = len(df_select.columns)
 combo_count = 2
 
-select_columns = [#'DataSource',
-                  'Commodity',
-                  'ProductOrMarket',
-                  'Location',
-                  'ContractType',
-                  'PriceType',
-                  #'Granularity',
-                  #'PublicationFrequency',
-                  #'PublicationCalendar',
-                  'Currency',
-                  'CurveUnit',
-                  'CurveType',
-                  'UsageType',
-                  'OwnerRole',
-                  'Destination',
-                  'CurveStatus',
-                  'TimeOfDay',
-                  'Timezone',
-                  ]
 report_columns = select_columns
 select_columns = select_columns[1:5]
 
