@@ -5,7 +5,7 @@ from load_data import get_df, select_columns
 #import mplcursors
 
 
-df = get_df()
+df = get_df(shortname='clean_apx')
 mask_data_source = df['DataSource'] == 'APX'
 df_select = df[mask_data_source]
 

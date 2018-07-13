@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 
 # get the data as a dataframe
-df = get_df()
+df = get_df(shortname='clean_apx')
 mask_data_source = df['DataSource'] == 'APX'
 df_select = df[mask_data_source]
 df_select = df_select[select_columns]
