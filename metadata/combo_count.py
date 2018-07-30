@@ -53,6 +53,13 @@ for groupby_column in groupby_columns:
             else:
                 print('groupby fields: {}; groupby values: {}; column: {}.... count: {}: '.format(groupby_column, i, column, row[column]))
 
+    # unpivot the data
+    df_count.reset_index(inplace=True)
+    columns = list(df_count.columns)
+    columns.remove('Index')
+    df_norm = pd.melt(df_count, id_vars=['Index'], value_vars=columns)
+
+
 import pdb; pdb.set_trace()
 number_of_subplots = len(groupby_columns)
 fig, axes = plt.subplots(number_of_subplots, 1,
