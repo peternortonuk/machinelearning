@@ -22,6 +22,7 @@ groupby_columns = list(combinations(select_columns, combo_count))
 
 # every combination
 dict_of_df = {}
+dict_of_norm_df = {}
 for groupby_column in groupby_columns:
     # count distinct
     df_unique_count = df_select[report_columns].groupby(groupby_column).nunique()
@@ -45,20 +46,23 @@ for groupby_column in groupby_columns:
     # build up the list of results
     dict_of_df[groupby_column] = df_count
 
-    # now test for data quality
-    for i, row in df_count.iterrows():
+    # now test for data quality; take a copy because we will overwrite values here
+    df_norm = df_count.copy(deep=True)
+    for i, row in df_norm.iterrows():
         for column in report_columns:
             if (row[column] == 1) | (row[column] == row['RowCount']):
-                pass
+                df_norm.loc[i, column] = np.NaN
             else:
                 print('groupby fields: {}; groupby values: {}; column: {}.... count: {}: '.format(groupby_column, i, column, row[column]))
 
-    # unpivot the data
-    df_count.reset_index(inplace=True)
-    columns = list(df_count.columns)
-    columns.remove('Index')
-    df_norm = pd.melt(df_count, id_vars=['Index'], value_vars=columns)
+    # unpivot the data and remove NaN's
+    df_norm.reset_index(inplace=True)  # this puts the index into a column; called Index
+    df_norm = pd.melt(df_norm, id_vars=['Index'], value_vars=report_columns)
+    df_norm.dropna(axis=0, how='any', inplace=True)
+    dict_of_norm_df[groupby_column] = df_norm
 
+df_chart = pd.concat(dict_of_norm_df.values())
+df_chart.sort_values(['variable', 'Index'], inplace=True)
 
 import pdb; pdb.set_trace()
 number_of_subplots = len(groupby_columns)
