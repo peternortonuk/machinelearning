@@ -53,18 +53,20 @@ for groupby_column in groupby_columns:
             if (row[column] == 1) | (row[column] == row['RowCount']):
                 df_norm.loc[i, column] = np.NaN
             else:
-                print('groupby fields: {}; groupby values: {}; column: {}.... count: {}: '.format(groupby_column, i, column, row[column]))
+                #print('groupby fields: {}; groupby values: {}; column: {}.... count: {}: '.format(groupby_column, i, column, row[column]))
+                pass
 
     # unpivot the data and remove NaN's
+    df_norm['GroupBy'] = [groupby_column] * len(df_norm)
     df_norm.reset_index(inplace=True)  # this puts the index into a column; called Index
-    df_norm = pd.melt(df_norm, id_vars=['Index'], value_vars=report_columns)
+    df_norm = pd.melt(df_norm, id_vars=['GroupBy', 'Index'], value_vars=report_columns)
     df_norm.dropna(axis=0, how='any', inplace=True)
     dict_of_norm_df[groupby_column] = df_norm
 
-df_chart = pd.concat(dict_of_norm_df.values())
-df_chart.sort_values(['variable', 'Index'], inplace=True)
 
-import pdb; pdb.set_trace()
+df_chart = pd.concat(dict_of_norm_df.values())
+df_chart.sort_values(['GroupBy', 'Index'], inplace=True)
+
 number_of_subplots = len(groupby_columns)
 fig, axes = plt.subplots(number_of_subplots, 1,
                          figsize=(6, number_of_subplots * 6))
