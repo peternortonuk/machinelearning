@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from itertools import combinations
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from load_data import get_df, select_columns
 #import mplcursors
 
@@ -66,6 +66,7 @@ for groupby_column in groupby_columns:
 
 df_chart = pd.concat(dict_of_norm_df.values())
 df_chart.sort_values(['GroupBy', 'Index'], inplace=True)
+import pdb; pdb.set_trace()
 
 number_of_subplots = len(groupby_columns)
 fig, axes = plt.subplots(number_of_subplots, 1,
